@@ -1,7 +1,10 @@
 #ifndef SPONGE_LIBSPONGE_BYTE_STREAM_HH
 #define SPONGE_LIBSPONGE_BYTE_STREAM_HH
 
+#include <deque>
 #include <string>
+
+using namespace std;
 
 //! \brief An in-order byte stream.
 
@@ -10,14 +13,12 @@
 //! and then no more bytes can be written.
 class ByteStream {
   private:
-    // Your code here -- add private members as necessary.
-
-    // Hint: This doesn't need to be a sophisticated data structure at
-    // all, but if any of your tests are taking longer than a second,
-    // that's a sign that you probably want to keep exploring
-    // different approaches.
-
-    bool _error{};  //!< Flag indicating that the stream suffered an error.
+    const size_t _capacity;     //!< The maximum number of bytes the stream can hold
+    size_t _bytes_written = 0;  //!< The total number of bytes that have been written to the stream
+    size_t _bytes_read = 0;     //!< The total number of bytes that have been read (or popped) from the stream
+    bool _input_ended = false;  //!< Flag indicating whether input has ended (i.e., no more data will be written)
+    deque<char> bytestream{};   //!< The stream with room for `_capacity` bytes.
+    bool _error{};              //!< Flag indicating that the stream suffered an error.
 
   public:
     //! Construct a stream with room for `capacity` bytes.
