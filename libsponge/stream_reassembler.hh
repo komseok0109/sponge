@@ -4,8 +4,8 @@
 #include "byte_stream.hh"
 
 #include <cstdint>
-#include <string>
 #include <deque>
+#include <string>
 
 using namespace std;
 
@@ -13,12 +13,16 @@ using namespace std;
 //! possibly overlapping) into an in-order byte stream.
 class StreamReassembler {
   private:
-    ByteStream _output;                 //!< The reassembled in-order byte stream.
-    size_t _capacity;                   //!< The maximum number of bytes (both reassembled and unassembled).
-    size_t _unassembled_bytes = 0;      //!< The count of bytes in substrings that have been accepted but not yet reassembled.
-    deque<char> _bytes_to_reassemble;   //!< A deque of bytes that have been accepted but not yet assembled, with possible gaps due to out-of-order arrival of substrings.
-    deque<bool> _indicators;            //!< A deque of boolean values indicating whether each byte in '_bytes_to_reassemble' is valid (i.e., accepted).
-    bool _eof = false;                  //!< Flag indicating whether a valid 'eof' has been received in 'push_substring'.
+    ByteStream _output;  //!< The reassembled in-order byte stream.
+    size_t _capacity;    //!< The maximum number of bytes (both reassembled and unassembled).
+    size_t _unassembled_bytes = 0;
+    //!< The count of bytes in substrings that have been accepted but not yet reassembled.
+    deque<char> _bytes_to_reassemble;
+    //!< A deque of bytes that have been accepted but not yet assembled,
+    //!< with possible gaps due to out-of-order arrival of substrings.
+    deque<bool> _indicators;
+    //!< A deque of boolean values indicating whether each byte in '_bytes_to_reassemble' is valid (i.e., accepted).
+    bool _eof = false;  //!< Flag indicating whether a valid 'eof' has been received in 'push_substring'.
 
   public:
     //! \brief Construct a `StreamReassembler` that will store up to `capacity` bytes.
