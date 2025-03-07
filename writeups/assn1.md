@@ -20,14 +20,14 @@ Either a deque or a vector with a fixed size equal to the capacity is used. Base
 - One deque stores the bytes. (`_bytes_to_reassemble`)
 - The other is a boolean deque that records whether each position in the byte deque contains a valid received byte or is still 
 empty. Since substrings can arrive out of order, gaps (empty spaces) may exist between the valid bytes. (`_indicators`)
-
+```
 first unread|<---------------------capacity---------------------->|
 +-------------------------------------------------------------------------------+
 |###########|#############|____####___#############___##___###____|             |
                           |FFFFTTTTFFFTTTTTTTTTTTTTFFFTTFFFTTTFFFF|             |
 +-------------------------------------------------------------------------------+
 0        first unassembled|<--remaining_capacity----------------->|first unacceptable    
-
+```
 ## `push_substring` function flow: how StreamReassembler accepts substring
 [1] Calculate the range boundaries: first_unassembled, first_unacceptable
 
