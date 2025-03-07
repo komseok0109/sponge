@@ -34,20 +34,19 @@ first unread|<---------------------capacity---------------------->|
 [2] If `eof` is true and within acceptable range, update _eof
 
 [3] If index + data overlaps with acceptable range:
-    - Calculate the start and end indices of `data` within the acceptable range w.r.t whole stream
-    - Extract the acceptable bytes
+ - Calculate the start and end indices of `data` within the acceptable range w.r.t whole stream
+- Extract the acceptable bytes
 
 [4] For each acceptable byte:
-    - If byte hasn't been placed yet, insert into `_bytes_reassemble`
-    - Mark byte as valid and increment `_unassembled_bytes`
+- If byte hasn't been placed yet, insert into `_bytes_reassemble`
+- Mark byte as valid and increment `_unassembled_bytes`
 
 [5] Calculate bytes to assemble by checking indicators
-    - Write the assembled bytes to output stream
+- Write the assembled bytes to output stream
 
 [6] Update buffers (remove assembled bytes, resize)
 
 [7] If eof is true and no unassembled bytes, end input
-
 
 Implementation Challenges:
 Initially, I tried using the `count` method to calculate `_unassembled_bytes` by counting the number of true values in
