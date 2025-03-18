@@ -8,7 +8,7 @@ constexpr uint64_t ALIGN = 1ULL << 32;
 //! \param n The input absolute 64-bit sequence number
 //! \param isn The initial sequence number
 WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
-    return isn + n;
+    return isn + n;  // (isn + n) mod 2^32
 }
 
 //! Transform a WrappingInt32 into an "absolute" 64-bit sequence number (zero-indexed)
@@ -22,14 +22,23 @@ WrappingInt32 wrap(uint64_t n, WrappingInt32 isn) {
 //! and the other stream runs from the remote TCPSender to the local TCPReceiver and
 //! has a different ISN.
 uint64_t unwrap(WrappingInt32 n, WrappingInt32 isn, uint64_t checkpoint) {
-    const uint64_t offset = static_cast<uint32_t>(n-isn);
+    // Calculate offset and align the checkpoint to the smaller neares multiple of ALIGN
+    const uint64_t offset = static_cast<uint32_t>(n - isn);
     const uint64_t aligned_checkpoint = (checkpoint / ALIGN) << 32;
+
+    //<! The "middle" candidate absolute seqno based on the aligned checkpoint and the offset
     const uint64_t mid = aligned_checkpoint + offset;
     if (mid < checkpoint) {
+        //<! The "high" candidate absolute seqno by adding ALIGN to the middle value
         const uint64_t high = aligned_checkpoint + offset + ALIGN;
-        return checkpoint < (ALIGN -1) * ALIGN && high - checkpoint <= checkpoint - mid ? high : mid;
+
+        // Check if the "high" is closer to the checkpoint, or if "mid" should be chosen
+        return checkpoint < (ALIGN - 1) * ALIGN && high - checkpoint <= checkpoint - mid ? high : mid;
     } else {
+        //<! The "low" candidate absolute seqno by adding ALIGN to the middle value
         const uint64_t low = aligned_checkpoint + offset - ALIGN;
+
+        // Check if the "low" is closer to the checkpoint, or if "mid" should be chosen
         return checkpoint >= ALIGN && mid - checkpoint >= checkpoint - low ? low : mid;
     }
 }

@@ -20,6 +20,12 @@ class TCPReceiver {
     //! The maximum number of bytes we'll store.
     size_t _capacity;
 
+    //! Flag indicating if the first segment that has the SYN flag has been received.
+    bool _syn_received{};
+
+    //! The Initial Sequence Number (ISN) used for this connection.
+    WrappingInt32 _isn{0};
+
   public:
     //! \brief Construct a TCP receiver
     //!
