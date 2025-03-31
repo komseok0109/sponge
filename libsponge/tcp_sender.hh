@@ -32,6 +32,56 @@ class TCPSender {
     //! the (absolute) sequence number for the next byte to be sent
     uint64_t _next_seqno{0};
 
+    uint64_t _ackno{};  //! The acknowledgement from the receiver.
+
+    size_t _bytes_in_flight{};  //! The number of bytes sent but not yet acknowledged.
+
+    bool _syn_sent{};  //! Flag indicating whether a SYN segment has been sent.
+    bool _fin_sent{};  //! Flag indicating whether a FIN segment has been sent.
+
+    uint64_t _rwnd{1};  //! The receiver's advertised window size (rwnd).
+    bool _rwnd_zero{};  //! Flag indicating whether the receiver's window size is 0.
+
+    std::queue<TCPSegment> _outstanding_segments{};  //! Queue of segments that have been sent but not yet acknowledge.
+
+    unsigned int _consecutive_retransmissions{};  //! Number of consecutive retransmissions that have occurred in a row
+
+    class RetransmissionTimer {
+      private:
+        size_t _elapsed_time{};  //! Time elapsed since the timer started.
+        bool _power{};           //! Flag indicating the timer is running.
+        unsigned int _rto;       //! current value of RTO.
+      public:
+        RetransmissionTimer(unsigned int initial_rto) : _rto(initial_rto) {}
+        void start_timer() {
+            if (_power)
+                return;
+            _elapsed_time = 0;
+            _power = true;
+        }
+        void stop_timer() { _power = false; }
+        void restart_timer_with_initial_rto(unsigned int initial_rto) {
+            _rto = initial_rto;
+            _elapsed_time = 0;
+            _power = true;
+        }
+        bool timeout(size_t ms_since_last_tick, bool rwnd_zero) {
+            if (!_power)
+                return false;
+            _elapsed_time += ms_since_last_tick;
+            if (_elapsed_time < _rto)
+                return false;
+            else {
+                if (!rwnd_zero)
+                    _rto *= 2;
+                _elapsed_time = 0;
+                return true;
+            }
+        }
+    };
+
+    RetransmissionTimer _timer;  //! Retransmission timer.
+
   public:
     //! Initialize a TCPSender
     TCPSender(const size_t capacity = TCPConfig::DEFAULT_CAPACITY,
