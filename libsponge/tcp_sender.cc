@@ -41,7 +41,7 @@ void TCPSender::fill_window() {
         _segments_out.push(segment_to_send);
         _outstanding_segments.push(segment_to_send);
         _next_seqno += segment_to_send.length_in_sequence_space();
-        _bytes_in_flight += segment_to_send.length_in_sequence_space();        
+        _bytes_in_flight += segment_to_send.length_in_sequence_space();
     }
 }
 

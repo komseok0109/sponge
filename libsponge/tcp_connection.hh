@@ -25,7 +25,7 @@ class TCPConnection {
     bool _active{true};
 
     void _tcp_send_segment();
-    void _deal_with_rst (const bool received);
+    void _deal_with_rst(const bool received);
 
   public:
     //! \name "Input" interface for the writer

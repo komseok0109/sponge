@@ -52,9 +52,7 @@ class TCPSender {
         unsigned int _rto;       //! current value of RTO.
       public:
         RetransmissionTimer(unsigned int initial_rto) : _rto(initial_rto) {}
-        void start_timer() {
-            _elapsed_time = 0;
-        }
+        void start_timer() { _elapsed_time = 0; }
         void restart_timer_with_initial_rto(unsigned int initial_rto) {
             _rto = initial_rto;
             _elapsed_time = 0;
@@ -64,7 +62,8 @@ class TCPSender {
             return _elapsed_time >= _rto;
         }
         void double_rto(bool rwnd_zero) {
-           if (!rwnd_zero) _rto *= 2;
+            if (!rwnd_zero)
+                _rto *= 2;
         }
     };
 
