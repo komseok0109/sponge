@@ -49,34 +49,22 @@ class TCPSender {
     class RetransmissionTimer {
       private:
         size_t _elapsed_time{};  //! Time elapsed since the timer started.
-        bool _power{};           //! Flag indicating the timer is running.
         unsigned int _rto;       //! current value of RTO.
       public:
         RetransmissionTimer(unsigned int initial_rto) : _rto(initial_rto) {}
         void start_timer() {
-            if (_power)
-                return;
             _elapsed_time = 0;
-            _power = true;
         }
-        void stop_timer() { _power = false; }
         void restart_timer_with_initial_rto(unsigned int initial_rto) {
             _rto = initial_rto;
             _elapsed_time = 0;
-            _power = true;
         }
-        bool timeout(size_t ms_since_last_tick, bool rwnd_zero) {
-            if (!_power)
-                return false;
+        bool timeout(size_t ms_since_last_tick) {
             _elapsed_time += ms_since_last_tick;
-            if (_elapsed_time < _rto)
-                return false;
-            else {
-                if (!rwnd_zero)
-                    _rto *= 2;
-                _elapsed_time = 0;
-                return true;
-            }
+            return _elapsed_time >= _rto;
+        }
+        void double_rto(bool rwnd_zero) {
+           if (!rwnd_zero) _rto *= 2;
         }
     };
 

@@ -36,15 +36,13 @@ void TCPSender::fill_window() {
         if (segment_to_send.length_in_sequence_space() == 0) {
             break;
         }
+        if (_outstanding_segments.empty())
+            _timer.start_timer();
         _segments_out.push(segment_to_send);
         _outstanding_segments.push(segment_to_send);
         _next_seqno += segment_to_send.length_in_sequence_space();
-        _bytes_in_flight += segment_to_send.length_in_sequence_space();
-
-        // New segment sent, set consecutive retransmissions to 0.
-        _consecutive_retransmissions = 0;
+        _bytes_in_flight += segment_to_send.length_in_sequence_space();        
     }
-    _timer.start_timer();
 }
 
 //! \param ackno The remote receiver's ackno (acknowledgment number)
@@ -70,26 +68,22 @@ void TCPSender::ack_received(const WrappingInt32 ackno, const uint16_t window_si
                 break;
             _outstanding_segments.pop();
             _bytes_in_flight -= segment_length;
+            _timer.restart_timer_with_initial_rto(_initial_retransmission_timeout);
         }
-
-        // Valid ack has been received, set RTO back to its initial value.
-        _timer.restart_timer_with_initial_rto(_initial_retransmission_timeout);
-        if (_outstanding_segments.empty())
-            _timer.stop_timer();  // All has been acknowledged, stop timer.
+        _consecutive_retransmissions = 0;
         fill_window();
     }
 }
 
 //! \param[in] ms_since_last_tick the number of milliseconds since the last call to this method
 void TCPSender::tick(const size_t ms_since_last_tick) {
-    if (_timer.timeout(ms_since_last_tick, _rwnd_zero)) {
+    if (_timer.timeout(ms_since_last_tick)) {
         if (!_outstanding_segments.empty()) {
             _segments_out.push(_outstanding_segments.front());
-            if (!_rwnd_zero)
-                _consecutive_retransmissions++;
+            _timer.double_rto(_rwnd_zero);
+            _consecutive_retransmissions++;
+            _timer.start_timer();
         }
-        _timer.stop_timer();
-        _timer.start_timer();
     }
 }
 
