@@ -21,10 +21,14 @@ class TCPConnection {
     //! in case the remote TCPConnection doesn't know we've received its whole stream?
     bool _linger_after_streams_finish{true};
 
-    size_t _time_since_last_segment_received{};
+    //! Time elapsed (in milliseconds) since the last segment was received.
+    size_t _time_since_last_segment_received{}; 
+    // Indicates whether the TCP connection is currently active.
     bool _active{true};
-
+  
+    //! \brief Helper function to send all queued TCP segments
     void _tcp_send_segment();
+    //! \brief Helper function that handles the logic when a RST is involved.
     void _deal_with_rst(const bool received);
 
   public:
