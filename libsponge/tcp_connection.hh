@@ -22,10 +22,10 @@ class TCPConnection {
     bool _linger_after_streams_finish{true};
 
     //! Time elapsed (in milliseconds) since the last segment was received.
-    size_t _time_since_last_segment_received{}; 
+    size_t _time_since_last_segment_received{};
     // Indicates whether the TCP connection is currently active.
     bool _active{true};
-  
+
     //! \brief Helper function to send all queued TCP segments
     void _tcp_send_segment();
     //! \brief Helper function that handles the logic when a RST is involved.

@@ -13,7 +13,7 @@ If you used any part of best-submission codes, specify all the best-submission n
 
 - **Caution**: If you have no idea about above best-submission item, please refer the Assignment PDF for detailed description.
 
-Your benchmark results (without reordering, with reordering): [0.27, 0.26]
+Your benchmark results (without reordering, with reordering): [0.40, 0.38]
 
 ## Program Structure and Design of the TCPConnection:
 ### Helper Functions
