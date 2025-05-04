@@ -44,8 +44,13 @@ class NetworkInterface {
     //! outbound queue of Ethernet frames that the NetworkInterface wants sent
     std::queue<EthernetFrame> _frames_out{};
 
+    //! ARP cache: maps IP address to (Ethernet address, time-to-live in ms)
     unordered_map<uint32_t, pair<EthernetAddress, int>> _arp_cache{};
+
+    //! Stores IP datagrams waiting for ARP reply: IP address -> queue of datagrams
     unordered_map<uint32_t, queue<InternetDatagram>> _ip_datagrams_waiting_for_arp_reply{};
+    
+    //! Time since last ARP request was sent (in milliseconds): IP address -> elapsed time
     unordered_map<uint32_t, size_t> _arp_request_elapsed{};
 
   public:
