@@ -23,18 +23,20 @@ void Router::route_one_datagram(InternetDatagram &dgram) {
     const uint32_t dst_address = dgram.header().dst;
 
     optional<RoutingTableEntry> longest_prefix_match;
-    for (const auto &entry: _routing_table){
+    for (const auto &entry : _routing_table) {
         if (entry.prefix_length == 0 && !longest_prefix_match.has_value())
             longest_prefix_match = entry;
-        else if (entry.prefix_length != 0 && dst_address >> (32 - entry.prefix_length) == entry.route_prefix >> (32-entry.prefix_length)){
+        else if (entry.prefix_length != 0 &&
+                 dst_address >> (32 - entry.prefix_length) == entry.route_prefix >> (32 - entry.prefix_length)) {
             if (!longest_prefix_match.has_value() || entry.prefix_length > longest_prefix_match.value().prefix_length)
                 longest_prefix_match = entry;
         }
     }
-    
-    if (longest_prefix_match.has_value() && dgram.header().ttl > 1){
+
+    if (longest_prefix_match.has_value() && dgram.header().ttl > 1) {
         const optional<Address> next_hop_opt = longest_prefix_match.value().next_hop;
-        const Address next_hop = next_hop_opt.has_value() ? next_hop_opt.value() : Address::from_ipv4_numeric(dst_address);
+        const Address next_hop =
+            next_hop_opt.has_value() ? next_hop_opt.value() : Address::from_ipv4_numeric(dst_address);
         dgram.header().ttl--;
         interface(longest_prefix_match.value().interface_num).send_datagram(dgram, next_hop);
     }
