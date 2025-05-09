@@ -44,6 +44,15 @@ class Router {
     //! The router's collection of network interfaces
     std::vector<AsyncNetworkInterface> _interfaces{};
 
+    struct RoutingTableEntry {
+        uint32_t route_prefix;
+        uint8_t prefix_length;
+        std::optional<Address> next_hop;
+        size_t interface_num;
+    };
+
+    std::vector<RoutingTableEntry> _routing_table{};
+
     //! Send a single datagram from the appropriate outbound interface to the next hop,
     //! as specified by the route with the longest prefix_length that matches the
     //! datagram's destination address.
