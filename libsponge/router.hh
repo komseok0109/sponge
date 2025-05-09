@@ -44,13 +44,15 @@ class Router {
     //! The router's collection of network interfaces
     std::vector<AsyncNetworkInterface> _interfaces{};
 
+    //! Represents a single entry in the routing table 
     struct RoutingTableEntry {
-        uint32_t route_prefix;
-        uint8_t prefix_length;
-        std::optional<Address> next_hop;
-        size_t interface_num;
+        uint32_t route_prefix; //! The "up-to-32-bit" IPv4 address prefix to match the datagram's destination address against
+        uint8_t prefix_length; //! The number of the most-significant bits of the route_prefix will need to match
+        std::optional<Address> next_hop; //! The IP address of the next hop.
+        size_t interface_num; //! The index of the interface to send the datagram out on.
     };
 
+    //! List of all routing table entries maintained by the router
     std::vector<RoutingTableEntry> _routing_table{};
 
     //! Send a single datagram from the appropriate outbound interface to the next hop,
