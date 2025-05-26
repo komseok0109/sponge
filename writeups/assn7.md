@@ -40,7 +40,15 @@ Our implementations successfully started and ended a conversation with each othe
 ![Client](./team_client_file.png)
 - Sending file - Server
 ![Server](./team_server_file.png)
-
+Swap Role:
+- Connection - Client
+![Client](./team_client_exchanged.png)
+- Connection - Server
+![Server](./team_server_exchanged.png)
+- Sending file - Client
+![Client](./team_client_file_exchanged.png)
+- Sending file - Server
+![Server](./team_server_file_exchanged.png)
 Creative portion (optional):
 []
 
